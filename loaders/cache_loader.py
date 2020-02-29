@@ -30,6 +30,9 @@ class CacheLoader(Dataset):
     def cal_sizes (self):
         sizes = []
         for root_id, images_root in enumerate(self.roots):
+            print("BREAK")
+            print(root_id)
+            print(images_root)
             size = 0
             for root, _, files in os.walk(images_root):
                 for file in files:
@@ -38,6 +41,8 @@ class CacheLoader(Dataset):
                         self.extension[root_id] = 'jpg'
                     if (file_extension == '.png' or file_extension == '.jpg') and 'bounding' not in file_name and 'opc' not in file_name:
                         size += 1
+            print("SIZE: ");
+            print(size);
             sizes.append(size // 4)
         return sizes
 

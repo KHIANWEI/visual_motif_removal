@@ -2,12 +2,12 @@ from utils.train_utils import *
 from torch import nn
 
 # paths
-root_path = '..'
-train_tag = 'demo_emojis'
+root_path = '.'
+train_tag = 'testTrainNet2'
 
 
 # datasets paths
-cache_root = ['data folder a', 'data folder b', '...']
+cache_root = ['./dataset/tempDataset2']
 
 # dataset configurations
 patch_size = 128
@@ -25,10 +25,10 @@ use_vm_decoder = True
 # train configurations
 gamma1 = 2   # L1 image
 gamma2 = 1   # L1 visual motif
-epochs = 200
-batch_size = 32
-print_frequency = 100
-save_frequency = 10
+epochs = 2
+batch_size = 16
+print_frequency = 10
+save_frequency = 2
 device = torch.device('cuda:0')
 
 

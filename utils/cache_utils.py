@@ -6,27 +6,27 @@ import numpy as np
 
 
 # dataset configurations
-dataset_tag = 'demo_text_vm_ds'
-images_root = 'path to images'
-cache_root = 'path  to data dir/%s' % dataset_tag
-vm_root = '../data/text/word2.txt'
+dataset_tag = 'tempDataset2'
+images_root = './DATA_TRAIN'
+cache_root = './dataset/%s' % dataset_tag
+vm_root = './WATERMARKS_DATA'
 image_size = 512
 vm_size = (50, 150)
 rotate_vm = True
 scale_vm = True
-crop_vm = True
+crop_vm = False
 batch_vm = 13
 weight = (0.2, 0.8)
-use_rgb = False
-perturbate = False
-opacity_var = 0.
+use_rgb = True
+perturbate = True
+opacity_var = 0.2
 font = 'path to fonts dir'
 text_border = 3
 blur = True
 
 # number of images, type
-num_train = 5000
-num_test = 500
+num_train = 500
+num_test = 50
 save_extension = 'jpg'
 
 
