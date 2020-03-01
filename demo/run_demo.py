@@ -10,12 +10,13 @@ import torch
 
 # consts
 DEVICE = torch.device('cpu')
-ROOT_PATH = '.'
+ROOT_PATH = '..'
+NET_FOLDER_PATH = '%s/ManualTestNet' % ROOT_PATH
 DATA_URL = 'http://pxcm.org/motif/demo.zip'
 DATA_ZIP_FILE = '%s/demo.zip' % ROOT_PATH
-NET_PATH = '%s/net_baseline.pth' % ROOT_PATH
-TEST_PATH = '%s/test_images' % ROOT_PATH
-RECONSTRUCTED_PATH = '%s/reconstructed_images' % ROOT_PATH
+NET_PATH = '%s/ManualTestNet/net_baseline_5.pth' % ROOT_PATH
+TEST_PATH = '%s/ManualTest' % ROOT_PATH
+RECONSTRUCTED_PATH = '%s/ManualTestOP' % ROOT_PATH
 
 
 def download_data():
@@ -39,7 +40,7 @@ def download_data():
 def run_demo():
     download_data()
     init_folders(RECONSTRUCTED_PATH)
-    opt = load_globals(ROOT_PATH, {}, override=False)
+    opt = load_globals(NET_FOLDER_PATH, {}, override=False)
     run_net(opt, DEVICE, ROOT_PATH, TEST_PATH, RECONSTRUCTED_PATH, 'demo')
     print("Reconstructed images are at %s" % RECONSTRUCTED_PATH)
 
