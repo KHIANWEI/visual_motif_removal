@@ -4,7 +4,8 @@ from utils.train_utils import load_globals, init_folders, init_nets
 from loaders.motif_dataset import MotifDS
 from PIL import Image
 import numpy as np
-
+from utils.image_utils import save_image
+from torchvision.utils import make_grid
 
 # network names
 root_path = '..'
@@ -85,22 +86,64 @@ def run_net(opt, _device, _net_path, _source, _target, _train_tag, _tag=''):
     for path in synthesized_paths:
         prefix, _ = os.path.splitext(os.path.split(path)[-1])
         prefix = prefix.split('_')[0]
-        sy_np, sy_ts = load_image(path, _device, True)
-        results = list(net(sy_ts))
-        for idx, result in enumerate(results):
-            results[idx] = transform_to_numpy_image(result)
-        reconstructed_mask = results[1]
-        reconstructed_motif = None
-        if len(results) == 3:
-            reconstructed_raw_motif = results[2]
-            reconstructed_motif = (reconstructed_raw_motif - 1) * reconstructed_mask + 1
-        reconstructed_image = reconstructed_mask * results[0] + (1 - reconstructed_mask) * sy_np
-        for idx, image in enumerate([reconstructed_image, reconstructed_motif]):
-            if image is not None and idx < len(image_suffixes):
-                save_numpy_image(image, '%s_%s' % (image_suffixes[idx], _train_tag), _target, _source,
-                                 prefix=prefix)
+        sy_np, synthesized = load_image(path, _device, True)
+#        output = list(net(sy_ts))
+        output = net(synthesized)
+#        for idx, result in enumerate(output):
+#            output[idx] = transform_to_numpy_image(result)
+        guess_images, guess_mask = output[0], output[1]
+        expanded_guess_mask = guess_mask.repeat(1,3,1,1)
+        reconstructed_pixels = guess_images * expanded_guess_mask
+        reconstructed_images = synthesized * (1 - expanded_guess_mask) + reconstructed_pixels
+        transformed_guess_mask = expanded_guess_mask * 2 - 1
+        if len(output) == 3:
+            guess_vm = output[2]
+            reconstructed_vm = (guess_vm - 1) * expanded_guess_mask + 1
+            images_un = (torch.cat((synthesized, reconstructed_images, reconstructed_vm, transformed_guess_mask), 0))
+        else:
+            print("ERROR!")
+#            images_un = (torch.cat((synthesized, reconstructed_images, transformed_guess_mask, expanded_real_mask), 0))
+        images_un = torch.clamp(images_un.data, min=-1, max=1)
+        images_un = make_grid(images_un, nrow=synthesized.shape[0], padding=5, pad_value=1)
+        save_image(images_un, '../ManualTestOP/%s' %_train_tag)
+#        reconstructed_mask = output[1]
+#        reconstructed_mask_expanded = reconstructed_mask.repeat(1, 3, 1, 1)
+#        reconstructed_motif = None
+        
+#        if len(output) == 3:
+#            reconstructed_raw_motif = output[2]
+#            reconstructed_motif = (reconstructed_raw_motif - 1) * reconstructed_mask_expanded + 1
+#        reconstructed_image = reconstructed_mask * output[0] + (1 - reconstructed_mask_expanded) * sy_np
+#        for idx, image in enumerate([reconstructed_image, reconstructed_motif]):
+#            if image is not None and idx < len(image_suffixes):
+#                save_numpy_image(image, '%s_%s' % (image_suffixes[idx], _train_tag), _target, _source,
+#                                 prefix=prefix)
     print('done')
 
+def save_test_images(net, loader, image_name, device):
+    net.eval()
+    synthesized, images, vm_mask, _, vm_area = next(iter(loader))
+    vm_mask = vm_mask.to(device)
+    synthesized = synthesized.to(device)
+    output = net(synthesized)
+    guess_images, guess_mask = output[0], output[1]
+    expanded_guess_mask = guess_mask.repeat(1, 3, 1, 1)
+    expanded_real_mask = vm_mask.repeat(1, 3, 1, 1)
+    reconstructed_pixels = guess_images * expanded_guess_mask
+    reconstructed_images = synthesized * (1 - expanded_guess_mask) + reconstructed_pixels
+    transformed_guess_mask = expanded_guess_mask * 2 - 1
+    expanded_real_mask = expanded_real_mask * 2 - 1
+    if len(output) == 3:
+        guess_vm = output[2]
+        reconstructed_vm = (guess_vm - 1) * expanded_guess_mask + 1
+        images_un = (torch.cat((synthesized, reconstructed_images, reconstructed_vm, transformed_guess_mask), 0))
+    else:
+        images_un = (torch.cat((synthesized, reconstructed_images, transformed_guess_mask, expanded_real_mask), 0))
+    images_un = torch.clamp(images_un.data, min=-1, max=1)
+    images_un = make_grid(images_un, nrow=synthesized.shape[0], padding=5, pad_value=1)
+    save_image(images_un, image_name)
+    net.train()
+    return images_un
 
 if __name__ == '__main__':
     _opt = load_globals(net_path, {}, override=False)
