@@ -5,13 +5,14 @@ import shutil
 from urllib.request import urlopen
 from utils.train_utils import load_globals, init_folders
 from utils.visualize_utils import run_net
+from utils.visualize_utils import my_save_test_images
 from utils.train_utils import *
 import torch
 
 
 # consts
 DEVICE = torch.device('cpu')
-ROOT_PATH = '..'
+ROOT_PATH = '.'
 NET_FOLDER_PATH = '%s/ManualTestNet' % ROOT_PATH
 DATA_URL = 'http://pxcm.org/motif/demo.zip'
 DATA_ZIP_FILE = '%s/demo.zip' % ROOT_PATH
@@ -42,13 +43,12 @@ def run_demo():
 #    download_data()
     init_folders(RECONSTRUCTED_PATH)
     opt = load_globals(NET_FOLDER_PATH, {}, override=False)
-    temp_images_path = '../dataset/tempDataset2'
-    images_loader = my_loader(opt, cache_root=temp_images_path)
-    MY_NET_PATH = '../ManualTestNet'
-    SAVE_IMAGE_NAME = '../ManualTestOP/output.png'
+#    images_loader = my_loader(opt, cache_root=temp_images_path)
+    MY_NET_PATH = './ManualTestNet'
+    SAVE_IMAGE_NAME = './ManualTestOP/output.png'
     net = init_nets(opt, MY_NET_PATH, DEVICE, tag='45')
 
-    my_save_test_images(net, images_loader, DEVICE, SAVE_IMAGE_NAME)
+    my_save_test_images(net, TEST_PATH, DEVICE, SAVE_IMAGE_NAME)
 #    run_net(opt, DEVICE, ROOT_PATH, TEST_PATH, RECONSTRUCTED_PATH, 'demo')
     print("Reconstructed images are at %s" % RECONSTRUCTED_PATH)
 

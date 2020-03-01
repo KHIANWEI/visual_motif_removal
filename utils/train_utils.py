@@ -108,23 +108,6 @@ def save_test_images(net, loader, image_name, device):
     net.train()
     return images_un
 
-def my_save_test_images(net, loader, device, save_image_name):
-    net.eval()
-    synthesized, useless_1, useless_2, useless_3, useless_4 = next(iter(loader))
-    synthesized = synthesized.to(device)
-    output = net(synthesized)
-    guess_images, guess_mask = output[0], output[1]
-    expanded_guess_mask = guess_mask.repeat(1,3,1,1)
-    reconstructed_pixels = guess_images * expanded_guess_mask
-    reconstructed_images = synthesized * (1 - expanded_guess_mask) + reconstructed_pixels
-    transformed_guess_mask = expanded_guess_mask * 2 - 1
-    if len(output) == 3:
-        guess_vm = output[2]
-        reconstructed_vm = (guess_vm - 1) * expanded_guess_mask + 1
-        images_un = (torch.cat((synthesized, reconstructed_images, reconstructed_vm, transformed_guess_mask), 0))
-    else:
-        print('SHOULD NOT HAVE GOT HERE, ERROR!')
-    images_un = torch.clamp(images_un.data, min=-1, max=1)
-    images_un = make_grid(images_un, nrow = synthesized.shape[0], padding=5, pad_value=1)
-    save_image(images_un, save_image_name)
-    return
+
+
+
