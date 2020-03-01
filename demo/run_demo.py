@@ -11,7 +11,7 @@ import torch
 
 
 # consts
-DEVICE = torch.device('cpu')
+DEVICE = torch.device('cuda:0')
 ROOT_PATH = '.'
 NET_FOLDER_PATH = '%s/ManualTestNet' % ROOT_PATH
 DATA_URL = 'http://pxcm.org/motif/demo.zip'

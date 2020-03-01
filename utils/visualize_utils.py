@@ -8,7 +8,7 @@ from utils.image_utils import save_image
 from torchvision.utils import make_grid
 
 # network names
-root_path = '..'
+root_path = '.'
 train_tag = 'vm_demo_text_remover'
 load_tag = ''
 
@@ -141,7 +141,7 @@ def my_save_test_images(net, _source, device, save_image_name):
             print('SHOULD NOT HAVE GOT HERE, ERROR!')
         images_un = torch.clamp(images_un.data, min=-1, max=1)
         images_un = make_grid(images_un, nrow = synthesized.shape[0], padding=5, pad_value=1)
-        save_image(images_un, '../ManualTestOP/demoOutput')
+        save_image(images_un, './ManualTestOP/demoOutput.png')
     return
 
 if __name__ == '__main__':
