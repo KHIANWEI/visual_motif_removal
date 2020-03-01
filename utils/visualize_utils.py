@@ -120,31 +120,6 @@ def run_net(opt, _device, _net_path, _source, _target, _train_tag, _tag=''):
 #                                 prefix=prefix)
     print('done')
 
-def save_test_images(net, loader, image_name, device):
-    net.eval()
-    synthesized, images, vm_mask, _, vm_area = next(iter(loader))
-    vm_mask = vm_mask.to(device)
-    synthesized = synthesized.to(device)
-    output = net(synthesized)
-    guess_images, guess_mask = output[0], output[1]
-    expanded_guess_mask = guess_mask.repeat(1, 3, 1, 1)
-    expanded_real_mask = vm_mask.repeat(1, 3, 1, 1)
-    reconstructed_pixels = guess_images * expanded_guess_mask
-    reconstructed_images = synthesized * (1 - expanded_guess_mask) + reconstructed_pixels
-    transformed_guess_mask = expanded_guess_mask * 2 - 1
-    expanded_real_mask = expanded_real_mask * 2 - 1
-    if len(output) == 3:
-        guess_vm = output[2]
-        reconstructed_vm = (guess_vm - 1) * expanded_guess_mask + 1
-        images_un = (torch.cat((synthesized, reconstructed_images, reconstructed_vm, transformed_guess_mask), 0))
-    else:
-        images_un = (torch.cat((synthesized, reconstructed_images, transformed_guess_mask, expanded_real_mask), 0))
-    images_un = torch.clamp(images_un.data, min=-1, max=1)
-    images_un = make_grid(images_un, nrow=synthesized.shape[0], padding=5, pad_value=1)
-    save_image(images_un, image_name)
-    net.train()
-    return images_un
-
 if __name__ == '__main__':
     _opt = load_globals(net_path, {}, override=False)
     init_folders(target_root)

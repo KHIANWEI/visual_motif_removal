@@ -57,6 +57,19 @@ def init_loaders(opt, cache_root=''):
                                    shuffle=True, num_workers=1)
     return _train_data_loader, _test_data_loader
 
+def my_loader(opt, cache_root=''):
+    test_dataset = CacheLoader(cache_root, train=False, patch_size=None)
+    if opt.patch_size:
+        batch_scale = int(opt.image_size / opt.patch_size)
+        batch_scale **= 2
+    else:
+        batch_scale = 1
+    print(batch_scale)
+    print(opt.batch_size)
+    print('BATCH SCALE ABOVE')
+    test_data_loader = DataLoader(test_dataset, batch_size = max(2, opt.batch_size // batch_scale),
+                                  shuffle = True, num_workers = 1)
+    return test_data_loader
 
 def init_nets(opt, net_path, device, tag=''):
     net_baseline = UnetBaselineD(shared_depth=opt.shared_depth, use_vm_decoder=opt.use_vm_decoder,
@@ -69,7 +82,6 @@ def init_nets(opt, net_path, device, tag=''):
         net_baseline.load_state_dict(torch.load(cur_path, map_location=torch.device('cpu')))
     net_baseline = net_baseline.to(device)
     return net_baseline
-
 
 def save_test_images(net, loader, image_name, device):
     net.eval()
@@ -96,4 +108,23 @@ def save_test_images(net, loader, image_name, device):
     net.train()
     return images_un
 
-
+def my_save_test_images(net, loader, device, save_image_name):
+    net.eval()
+    synthesized, useless_1, useless_2, useless_3, useless_4 = next(iter(loader))
+    synthesized = synthesized.to(device)
+    output = net(synthesized)
+    guess_images, guess_mask = output[0], output[1]
+    expanded_guess_mask = guess_mask.repeat(1,3,1,1)
+    reconstructed_pixels = guess_images * expanded_guess_mask
+    reconstructed_images = synthesized * (1 - expanded_guess_mask) + reconstructed_pixels
+    transformed_guess_mask = expanded_guess_mask * 2 - 1
+    if len(output) == 3:
+        guess_vm = output[2]
+        reconstructed_vm = (guess_vm - 1) * expanded_guess_mask + 1
+        images_un = (torch.cat((synthesized, reconstructed_images, reconstructed_vm, transformed_guess_mask), 0))
+    else:
+        print('SHOULD NOT HAVE GOT HERE, ERROR!')
+    images_un = torch.clamp(images_un.data, min=-1, max=1)
+    images_un = make_grid(images_un, nrow = synthesized.shape[0], padding=5, pad_value=1)
+    save_image(images_un, save_image_name)
+    return
