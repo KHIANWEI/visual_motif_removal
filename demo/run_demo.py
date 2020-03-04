@@ -46,7 +46,7 @@ def run_demo():
 #    images_loader = my_loader(opt, cache_root=temp_images_path)
     MY_NET_PATH = './ManualTestNet'
     SAVE_IMAGE_NAME = './ManualTestOP/output.png'
-    net = init_nets(opt, MY_NET_PATH, DEVICE, tag='45')
+    net = init_nets(opt, MY_NET_PATH, DEVICE, tag='60')
 
     my_save_test_images(net, TEST_PATH, DEVICE, SAVE_IMAGE_NAME)
 #    run_net(opt, DEVICE, ROOT_PATH, TEST_PATH, RECONSTRUCTED_PATH, 'demo')

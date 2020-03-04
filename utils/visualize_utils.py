@@ -84,6 +84,8 @@ def run_net(opt, _device, _net_path, _source, _target, _train_tag, _tag=''):
     synthesized_paths = collect_synthesized(_source)
     image_suffixes = ['reconstructed_image', 'reconstructed_motif']
     for path in synthesized_paths:
+        print(path)
+        print('----^PATH^----')
         prefix, _ = os.path.splitext(os.path.split(path)[-1])
         prefix = prefix.split('_')[0]
         sy_np, synthesized = load_image(path, _device, True)
@@ -121,9 +123,13 @@ def run_net(opt, _device, _net_path, _source, _target, _train_tag, _tag=''):
     print('done')
     
 def my_save_test_images(net, _source, device, save_image_name):
+    counter = 0;
     net.eval()
     synthesized_paths = collect_synthesized(_source)
     for path in synthesized_paths:
+        print('path!')
+        print(path)
+        print('-------')
         prefix, _ = os.path.splitext(os.path.split(path)[-1])
         prefix = prefix.split('_')[0]
         sy_np, synthesized = load_image(path, device, True)
@@ -141,11 +147,8 @@ def my_save_test_images(net, _source, device, save_image_name):
             print('SHOULD NOT HAVE GOT HERE, ERROR!')
         images_un = torch.clamp(images_un.data, min=-1, max=1)
         images_un = make_grid(images_un, nrow = synthesized.shape[0], padding=5, pad_value=1)
-<<<<<<< Updated upstream
-        save_image(images_un, './ManualTestOP/demoOutput.png')
-=======
-        save_image(images_un, './ManualTestOP/demoOutput')
->>>>>>> Stashed changes
+        save_image(images_un, './ManualTestOP/newnameagain_%s.png' % counter)
+        counter = counter + 1
     return
 
 def generate_image(net, device, input_path, output_path):

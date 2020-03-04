@@ -3,11 +3,11 @@ from torch import nn
 
 # paths
 root_path = '.'
-train_tag = 'testTrainNet2'
+train_tag = 'actualFirstNetAgain'
 
 
 # datasets paths
-cache_root = ['./dataset/tempDataset2']
+cache_root = ['./dataset/actualDataSet']
 
 # dataset configurations
 patch_size = 128
@@ -25,10 +25,10 @@ use_vm_decoder = True
 # train configurations
 gamma1 = 2   # L1 image
 gamma2 = 1   # L1 visual motif
-epochs = 2
-batch_size = 16
-print_frequency = 10
-save_frequency = 2
+epochs = 200
+batch_size = 32
+print_frequency = 100
+save_frequency = 4
 device = torch.device('cuda:0')
 
 
@@ -88,7 +88,7 @@ def run():
     init_folders(nets_path, images_path)
     opt = load_globals(nets_path, globals(), override=True)
     train_loader, test_loader = init_loaders(opt, cache_root=cache_root)
-    base_net = init_nets(opt, nets_path, device)
+    base_net = init_nets(opt, nets_path, device, '60')
     train(base_net, train_loader, test_loader)
 
 
