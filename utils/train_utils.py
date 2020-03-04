@@ -57,20 +57,6 @@ def init_loaders(opt, cache_root=''):
                                    shuffle=True, num_workers=1)
     return _train_data_loader, _test_data_loader
 
-def my_loader(opt, cache_root=''):
-    test_dataset = CacheLoader(cache_root, train=False, patch_size=None)
-    if opt.patch_size:
-        batch_scale = int(opt.image_size / opt.patch_size)
-        batch_scale **= 2
-    else:
-        batch_scale = 1
-    print(batch_scale)
-    print(opt.batch_size)
-    print('BATCH SCALE ABOVE')
-    test_data_loader = DataLoader(test_dataset, batch_size = max(2, opt.batch_size // batch_scale),
-                                  shuffle = True, num_workers = 1)
-    return test_data_loader
-
 def init_nets(opt, net_path, device, tag=''):
     net_baseline = UnetBaselineD(shared_depth=opt.shared_depth, use_vm_decoder=opt.use_vm_decoder,
                                  blocks=opt.num_blocks)

@@ -141,8 +141,24 @@ def my_save_test_images(net, _source, device, save_image_name):
             print('SHOULD NOT HAVE GOT HERE, ERROR!')
         images_un = torch.clamp(images_un.data, min=-1, max=1)
         images_un = make_grid(images_un, nrow = synthesized.shape[0], padding=5, pad_value=1)
+<<<<<<< Updated upstream
         save_image(images_un, './ManualTestOP/demoOutput.png')
+=======
+        save_image(images_un, './ManualTestOP/demoOutput')
+>>>>>>> Stashed changes
     return
+
+def generate_image(net, device, input_path, output_path):
+    net.eval()
+    sy_np, synthesized = load_image(input_path, device, True)
+    output = net(synthesized)
+    guess_images, guess_mask = output[0], output[1]
+    expanded_guess_mask = guess_mask.repeat(1,3,1,1)
+    reconstructed_pixels = guess_images * expanded_guess_mask
+    reconstructed_images = synthesized * (1 - expanded_guess_mask) + reconstructed_pixels
+    save_image(reconstructed_images, output_path)
+    return
+    
 
 if __name__ == '__main__':
     _opt = load_globals(net_path, {}, override=False)
