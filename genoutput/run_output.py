@@ -8,13 +8,7 @@ import os
 
 
 # consts
-
-ROOT_PATH = '..'
-NET_FOLDER_PATH = '%s/ManualTestNet' % ROOT_PATH
-TEST_PATH = '%s/ManualTest' % ROOT_PATH
-RECONSTRUCTED_PATH = '%s/ManualTestOP' % ROOT_PATH
-
-OUTPUT_FOLDER = '%s/GeneratedOutputs' % ROOT_PATH
+OUTPUT_FOLDER = './GeneratedOutputs'
 
 def gen_output(input_path, net_folder, tag=''):
     my_device = torch.device('cuda:0')

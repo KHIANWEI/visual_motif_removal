@@ -159,7 +159,9 @@ def generate_image(net, device, input_path, output_path):
     expanded_guess_mask = guess_mask.repeat(1,3,1,1)
     reconstructed_pixels = guess_images * expanded_guess_mask
     reconstructed_images = synthesized * (1 - expanded_guess_mask) + reconstructed_pixels
-    save_image(reconstructed_images, output_path)
+    images_un = torch.clamp(reconstructed_images.data, min=-1, max=1)
+    images_un = make_grid(images_un, nrow = synthesized.shape[0], padding=0, pad_value=0)
+    save_image(images_un, output_path)
     return
     
 
